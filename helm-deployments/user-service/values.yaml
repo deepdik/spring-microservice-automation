@@ -1,0 +1,12 @@
+replicaCount: 2
+
+image:
+  repository: 051826736527.dkr.ecr.us-east-2.amazonaws.com/user-service
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 8080
+
+resources: {}

@@ -1,0 +1,51 @@
+pipeline {
+  agent any
+
+  environment {
+    AWS_ACCOUNT_ID = '051826736527'
+    REGION = 'us-east-2'
+    ECR_REPO = 'user-service'
+    IMAGE_TAG = "latest"
+    IMAGE_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
+  }
+
+  stages {
+    stage('Clone') {
+      steps {
+        git 'https://github.com/your-username/your-repo.git'
+      }
+    }
+
+    stage('Build JAR') {
+      steps {
+        sh './mvnw clean package -DskipTests'
+      }
+    }
+
+    stage('Build Docker Image') {
+      steps {
+        sh 'docker build -t $IMAGE_URI .'
+      }
+    }
+
+    stage('Login to ECR') {
+      steps {
+        sh """
+          aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
+        """
+      }
+    }
+
+    stage('Push to ECR') {
+      steps {
+        sh 'docker push $IMAGE_URI'
+      }
+    }
+
+    stage('Deploy to EKS via Helm') {
+      steps {
+        sh 'helm upgrade --install user-service ./helm-deployments/user-service --namespace default --set image.repository=$IMAGE_URI'
+      }
+    }
+  }
+}
