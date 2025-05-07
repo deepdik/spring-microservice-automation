@@ -47,6 +47,15 @@ pipeline {
       }
     }
 
+    stage('Configure kubeconfig for EKS') {
+      steps {
+        sh '''
+          aws eks update-kubeconfig --region $REGION --name my-eks-cluster
+          kubectl get nodes
+        '''
+      }
+    }
+
     stage('Deploy to EKS with Helm') {
       steps {
         sh '''
