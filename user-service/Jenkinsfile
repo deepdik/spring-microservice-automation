@@ -10,29 +10,29 @@ pipeline {
   }
 
   stages {
-//     stage('Clone') {
-//       steps {
-//         git branch: 'main', url: 'https://github.com/deepdik/spring-microservice-automation.git'
-//       }
-//     }
-
-    stage('Build JAR') {
+    stage('Checkout') {
       steps {
-        sh './mvnw clean package -DskipTests'
+        git 'https://github.com/your-username/spring-microservices.git'
+      }
+    }
+
+    stage('Build user-service JAR') {
+      steps {
+        dir('user-service') {
+          sh './mvnw clean package -DskipTests'
+        }
       }
     }
 
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t $IMAGE_URI .'
+        sh 'docker build -t $IMAGE_URI ./user-service'
       }
     }
 
     stage('Login to ECR') {
       steps {
-        sh """
-          aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com
-        """
+        sh "aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com"
       }
     }
 
@@ -42,7 +42,7 @@ pipeline {
       }
     }
 
-    stage('Deploy to EKS via Helm') {
+    stage('Deploy to EKS with Helm') {
       steps {
         sh 'helm upgrade --install user-service ./helm-deployments/user-service --namespace default --set image.repository=$IMAGE_URI'
       }
