@@ -50,7 +50,7 @@ pipeline {
     stage('Configure kubeconfig for EKS') {
       steps {
         sh '''
-          aws eks update-kubeconfig --region $REGION --name my-eks-cluster
+          aws eks update-kubeconfig --region $REGION --name spring-microservices-cluster
           kubectl get nodes
         '''
       }
