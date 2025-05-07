@@ -10,11 +10,11 @@ pipeline {
   }
 
   stages {
-    stage('Clone') {
-      steps {
-        git branch: 'main', url: 'https://github.com/deepdik/spring-microservice-automation.git'
-      }
-    }
+//     stage('Clone') {
+//       steps {
+//         git branch: 'main', url: 'https://github.com/deepdik/spring-microservice-automation.git'
+//       }
+//     }
 
     stage('Build JAR') {
       steps {
