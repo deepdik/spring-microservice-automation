@@ -12,7 +12,7 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        git 'https://github.com/your-username/spring-microservices.git'
+        git 'https://github.com/deepdik/spring-microservices.git'
       }
     }
 
