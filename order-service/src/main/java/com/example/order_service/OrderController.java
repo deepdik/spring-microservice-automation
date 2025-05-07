@@ -3,10 +3,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class UserController {
-    @GetMapping("/test")
+@RequestMapping("/orders") // or /orders
+public class OrderController {
+    @GetMapping
     public String getUsers() {
-        return "Hello from user-service!";
+        return "Hello from order-service!";
     }
 }
-
