@@ -27,7 +27,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         sh '''
-          docker build -t $IMAGE_URI ./order-service
+          docker build --no-cache -t $IMAGE_URI ./order-service
         '''
       }
     }
