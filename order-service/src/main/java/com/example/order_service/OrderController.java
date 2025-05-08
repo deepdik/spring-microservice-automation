@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/orders") // or /orders
+@RequestMapping("/order") // or /orders
 public class OrderController {
     @GetMapping
     public String getUsers() {
