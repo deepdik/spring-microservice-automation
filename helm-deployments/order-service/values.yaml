@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: 051826736527.dkr.ecr.us-east-2.amazonaws.com/order-service
