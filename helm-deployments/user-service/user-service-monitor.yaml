@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: user-service-monitor
+  namespace: monitoring
+  labels:
+    release: k8s-monitoring  # this must match Prometheus Operator's release label
+spec:
+  selector:
+    matchLabels:
+      app: user-service
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
