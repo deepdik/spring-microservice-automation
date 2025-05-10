@@ -1,0 +1,28 @@
+serviceAccount:
+  create: false
+  name: fluent-bit
+
+cloudWatch:
+  enabled: true
+  region: us-east-2
+  logGroupName: /eks/spring-microservices/logs
+  logStreamPrefix: from-fluentbit
+
+output:
+  cloudwatch:
+    enabled: true
+
+input:
+  tail:
+    enabled: true
+    path: /var/log/containers/*.log
+    parser: docker
+    tag: kube.*
+    refresh_interval: 10
+
+filters:
+  kubernetes:
+    enabled: true
+    match: kube.*
+
+

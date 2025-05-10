@@ -1,0 +1,31 @@
+#replicas: 1
+#minimumMasterNodes: 1
+#resources:
+#  requests:
+#    memory: 512Mi
+#    cpu: 500m
+#  limits:
+#    memory: 1Gi
+#    cpu: 1
+#
+#volumeClaimTemplate:
+#  accessModes: [ "ReadWriteOnce" ]
+#  resources:
+#    requests:
+#      storage: 1Gi
+#  storageClassName: gp2
+
+### Create a elasticsearch-values.yaml with emptyDir
+replicas: 1
+minimumMasterNodes: 1
+
+persistence:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi

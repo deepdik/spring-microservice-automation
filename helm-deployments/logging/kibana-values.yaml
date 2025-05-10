@@ -1,0 +1,29 @@
+replicaCount: 1
+
+elasticsearchHosts: "http://elasticsearch-master.logging.svc.cluster.local:9200"
+
+# Disable TLS
+tls:
+  enabled: false
+
+# Disable the pre-install hook that is failing
+createHelmHook: false
+
+# Provide static credentials (avoid token script)
+extraEnvs:
+  - name: ELASTICSEARCH_USERNAME
+    value: "elastic"
+  - name: ELASTICSEARCH_PASSWORD
+    value: "changeme"
+
+service:
+  type: LoadBalancer
+  port: 5601
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
