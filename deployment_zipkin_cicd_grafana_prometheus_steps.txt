@@ -1,0 +1,68 @@
+
+# === CI/CD Pipeline Setup ===
+1. Install Jenkins on EC2 or Kubernetes.
+2. Create Jenkinsfile:
+   stage('Build user-service JAR') {
+       steps {
+           dir('user-service') {
+               sh './mvnw clean package -DskipTests'
+           }
+       }
+   }
+
+3. Push Docker image to ECR:
+   docker tag user-service:latest 051826736527.dkr.ecr.us-east-2.amazonaws.com/user-service:latest
+   docker push 051826736527.dkr.ecr.us-east-2.amazonaws.com/user-service:latest
+
+# === Helm Deployment ===
+4. helm upgrade --install user-service ./user-service --namespace default
+5. helm upgrade --install order-service ./order-service --namespace default
+
+# === Kubernetes Deployment Files ===
+6. Apply Ingress:
+   kubectl apply -f spring-ingress.yaml
+
+# === Zipkin Setup ===
+7. helm repo add openzipkin https://openzipkin.github.io/zipkin
+8. helm install zipkin openzipkin/zipkin --namespace tracing --create-namespace
+9. Expose Zipkin:
+   kubectl get svc -n tracing
+   Access via LoadBalancer or port-forward
+
+# === Application Properties for Zipkin ===
+spring.application.name=user-service
+management.tracing.enabled=true
+management.tracing.sampling.probability=1.0
+management.zipkin.tracing.endpoint=http://zipkin.tracing.svc.cluster.local:9411/api/v2/spans
+
+# === Grafana + Prometheus ===
+10. helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+11. helm upgrade --install k8s-monitoring prometheus-community/kube-prometheus-stack -n monitoring --create-namespace
+12. Verify Prometheus targets:
+    kubectl port-forward svc/k8s-monitoring-kube-promet-prometheus -n monitoring 9090
+    Visit http://localhost:9090/targets
+
+13. Configure ServiceMonitor or annotations:
+    metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8080"
+
+14. Grafana:
+    kubectl port-forward svc/k8s-monitoring-grafana -n monitoring 3000
+    Access: http://localhost:3000
+
+# === Horizontal Pod Autoscaler (HPA) ===
+15. kubectl autoscale deployment user-service --cpu-percent=50 --min=1 --max=5
+16. kubectl get hpa
+
+# === Debugging and Monitoring ===
+17. kubectl get pods -o wide
+18. kubectl top pods
+19. kubectl describe pod <pod-name>
+20. kubectl logs <pod-name>
+
+# === Cleanup & Troubleshooting ===
+21. helm uninstall <release-name> -n <namespace>
+22. kubectl delete -f <file.yaml>
